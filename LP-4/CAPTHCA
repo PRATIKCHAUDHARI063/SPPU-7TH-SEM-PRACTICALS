@@ -13,28 +13,42 @@ image.write('063','pratik.png') #("captcha displayed words/ letters","filename :
 # this is for only text based generation and to verify also :)
 
 import random
-def checkcaptcha(captcha,user_captcha):
+
+# Returns True if given two strings are the same
+def checkCaptcha(captcha, user_captcha):
     if captcha == user_captcha:
-       return true 
-          return False
-def Generatecaptcha(n):
-    chrs = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890'
+        return True
+    return False
+
+# Generates a CAPTCHA of given length
+def generateCaptcha(n):
+    # Characters to be included in CAPTCHA
+    chrs = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    
+    # Generate n characters from the set and add them to captcha
     captcha = ""
     while n:
-    captcha += chrs[random.randit(0,61)]
-    n - = 1
+        captcha += chrs[random.randint(0, 61)]  # chrs has 62 characters, so we use index 0 to 61
+        n -= 1
     return captcha
-cap_len = int(input("Enter the length of the captcha to be generated"))
 
-captcha = Generatecaptcha(cap_len)
-print("GENERATED CAPTCHA :",captcha)
+# Driver code
+# Ask user for desired CAPTCHA length
+captcha_length = int(input("Enter the desired CAPTCHA length: "))
 
-print("ENTER THE ABOVE SHOWED CAPTCHA AS IT IS ")
-user_captcha = input()
+# Generate a random CAPTCHA of the specified length
+captcha = generateCaptcha(captcha_length)
+print("Generated CAPTCHA:", captcha)
 
+# Ask user to enter the CAPTCHA
+print("Enter the CAPTCHA shown above:")
+usr_captcha = input()
+
+# Notify user about matching status
 if checkCaptcha(captcha, usr_captcha):
     print("CAPTCHA Matched")
 else:
     print("CAPTCHA Not Matched")
+
 
 
