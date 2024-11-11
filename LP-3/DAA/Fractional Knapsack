@@ -1,4 +1,4 @@
-# Fractional Knapsack
+# Fractional Knapsack (college wala)
 
 def fractional_knapsack(value, weight, capacity):
     index = list(range(len(value)))
@@ -29,6 +29,35 @@ weight = input('Enter the positive weights of the {} item(s) in order: '
                .format(n)).split()
 weight = [int(w) for w in weight]
 capacity = int(input('Enter maximum weight: '))
+
+-------------------------------------------------------------------------------------------------------------------------
+# Easy one 
+                                                                                                                                                                                                                                                     class Item:
+ def _init_(self, value, weight):
+        self.value = value
+        self.weight = weight
+
+class Solution:
+    def fractionalKnapsack(self, W, arr, n):
+        arr.sort(key=lambda x: x.value / x.weight, reverse=True)
+        curWeight = 0
+        finalvalue = 0.0
+        for i in range(n):
+            if curWeight + arr[i].weight <= W:
+                curWeight += arr[i].weight
+                finalvalue += arr[i].value
+            else:
+                remain = W - curWeight
+                finalvalue += arr[i].value / arr[i].weight * remain
+                break
+        return finalvalue
+if _name_ == '_main_':
+    n = 3
+    W = 50
+    arr = [Item(60, 10), Item(100, 20), Item(120, 30)]
+    obj = Solution()
+    ans = obj.fractionalKnapsack(W, arr, n)
+    print("The maximum value is", ans)
  
 max_value, fractions = fractional_knapsack(value, weight, capacity)
 print('The maximum value of items that can be carried:', max_value)
