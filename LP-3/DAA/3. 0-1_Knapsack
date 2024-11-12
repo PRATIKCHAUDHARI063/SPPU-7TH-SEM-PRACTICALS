@@ -115,3 +115,124 @@ n = len(arr)
 
 max_profit = knapsack(W, arr, n)
 print("Maximum possible profit =", max_profit)
+----------------------------------------------------------------------------------------------------------------------------------
+// java branch and bound
+import java.util.PriorityQueue;
+
+class Item {
+    double weight;
+    int value;
+
+    public Item(double weight, int value) {
+        this.weight = weight;
+        this.value = value;
+    }
+}
+
+class Node implements Comparable<Node> {
+    int level;
+    int profit;
+    double weight;
+
+    public Node(int level, int profit, double weight) {
+        this.level = level;
+        this.profit = profit;
+        this.weight = weight;
+    }
+
+    @Override
+    public int compareTo(Node other) {
+        return Double.compare(other.weight, this.weight);  // Max heap based on weight
+    }
+}
+
+public class KnapsackBranchAndBound {
+
+    public static double bound(Node u, int n, double W, Item[] arr) {
+        // Calculate upper bound of profit for a node in the search tree
+        if (u.weight >= W) {
+            return 0;
+        }
+
+        double profitBound = u.profit;
+        int j = u.level + 1;
+        double totalWeight = u.weight;
+
+        // Greedily add items to the knapsack until the weight limit is reached
+        while (j < n && totalWeight + arr[j].weight <= W) {
+            totalWeight += arr[j].weight;
+            profitBound += arr[j].value;
+            j++;
+        }
+
+        // If there are still items left, calculate the fractional contribution of the next item
+        if (j < n) {
+            profitBound += (W - totalWeight) * arr[j].value / arr[j].weight;
+        }
+
+        return profitBound;
+    }
+
+    public static int knapsack(double W, Item[] arr, int n) {
+        // Sort items based on value-to-weight ratio in descending order
+        java.util.Arrays.sort(arr, (a, b) -> Double.compare(b.value / b.weight, a.value / a.weight));
+
+        PriorityQueue<Node> priorityQueue = new PriorityQueue<>();
+        Node u = new Node(-1, 0, 0);  // Dummy node at the start
+        priorityQueue.add(u);
+
+        int maxProfit = 0;
+
+        while (!priorityQueue.isEmpty()) {
+            u = priorityQueue.poll();
+
+            if (u.level == -1) {
+                // Start from the root node
+                Node v = new Node(0, 0, 0);
+                priorityQueue.add(v);
+            } else if (u.level == n - 1) {
+                continue;  // Skip if it is the last level (no more items to consider)
+            } else {
+                // Node including the next item
+                Node v = new Node(u.level + 1, u.profit + arr[u.level + 1].value, u.weight + arr[u.level + 1].weight);
+
+                // If the cumulated weight is less than or equal to W and profit is greater than previous profit, update maxProfit
+                if (v.weight <= W && v.profit > maxProfit) {
+                    maxProfit = v.profit;
+                }
+
+                // Get upper bound on profit and add the node to the queue if it's promising
+                double vBound = bound(v, n, W, arr);
+                if (vBound > maxProfit) {
+                    priorityQueue.add(v);
+                }
+
+                // Node without including the next item
+                v = new Node(u.level + 1, u.profit, u.weight);
+                vBound = bound(v, n, W, arr);
+                if (vBound > maxProfit) {
+                    priorityQueue.add(v);
+                }
+            }
+        }
+        return maxProfit;
+    }
+
+    public static void main(String[] args) {
+        double W = 10;
+        Item[] arr = {
+            new Item(2, 40),
+            new Item(3.14, 50),
+            new Item(1.98, 100),
+            new Item(5, 95),
+            new Item(3, 30)
+        };
+        int n = arr.length;
+
+        int maxProfit = knapsack(W, arr, n);
+        System.out.println("Maximum possible profit = " + maxProfit);
+    }
+}
+
+//KnapsackBranchAndBound
+
