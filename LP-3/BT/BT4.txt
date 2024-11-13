@@ -1,0 +1,105 @@
+ // SPDX-License-Identifier: UNLICENCED
+
+pragma solidity ^0.8.0;
+
+contract StudentData {
+    // Structure to represent a student
+    struct Student {
+        string name;
+        uint age;
+    }
+
+    // Array to store all students
+    Student[] public studentsList;
+
+    // Function to add a new student
+    function addStudent(string memory _name, uint _age) public {
+        studentsList.push(Student(_name, _age));
+    }
+
+    // Function to get a student's details by index
+    function getStudentDetails(uint _index) public view returns (string memory, uint) {
+        require(_index < studentsList.length, "Student not found");
+        Student memory student = studentsList[_index];
+        return (student.name, student.age);
+    }
+
+    // Fallback function to accept Ether
+    fallback() external payable {}
+
+    // Receive function to accept Ether
+    receive() external payable {}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------
+
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract StudentData {
+    // Structure to store student information
+    struct Student {
+        uint id;
+        string name;
+        uint age;
+        string course;
+    }
+
+    // Array to store all students
+    Student[] public students;
+
+    // Mapping to store if a student ID already exists
+    mapping(uint => bool) public studentExists;
+
+    // Event to log student addition
+    event StudentAdded(uint id, string name);
+
+    // Function to add a new student
+    function addStudent(uint _id, string memory _name, uint _age, string memory _course) public {
+        // Ensure that the student ID is unique
+        require(!studentExists[_id], "Student with this ID already exists.");
+
+        // Add the student to the array
+        students.push(Student(_id, _name, _age, _course));
+
+        // Mark the ID as existing
+        studentExists[_id] = true;
+
+        // Emit the event
+        emit StudentAdded(_id, _name);
+    }
+
+    // Function to retrieve a student by index
+    function getStudent(uint index) public view returns (uint, string memory, uint, string memory) {
+        require(index < students.length, "Index out of bounds.");
+        Student memory student = students[index];
+        return (student.id, student.name, student.age, student.course);
+    }
+
+    // Fallback function to handle unexpected Ether transactions
+    fallback() external payable {
+        // No specific action, but Ether sent to the contract will be held in the contract's balance
+    }
+
+    // Receive function to allow the contract to receive Ether directly
+    receive() external payable {}
+
+    // Function to get contract balance (only for demonstration; optional)
+    function getContractBalance() public view returns (uint) {
+        return address(this).balance;
+    }
+}
