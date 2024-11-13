@@ -1,0 +1,389 @@
+# Given a bank customer, build a neural network-based classifier that can determine whether 
+
+# they will leave or not in the next 6 months.
+
+# Dataset Description: The case study is from an open-source dataset from Kaggle.
+
+# The dataset contains 10,000 sample points with 14 distinct features such as
+
+# CustomerId, CreditScore, Geography, Gender, Age, Tenure, Balance, etc.
+
+# Link to the Kaggle project:
+
+# https://www.kaggle.com/barelydedicated/bank-customer-churn-modeling
+
+# Perform following steps:
+
+# 1. Read the dataset.
+
+# 2. Distinguish the feature and target set and divide the data set into training and test sets.
+
+# 3. Normalize the train and test data. 
+
+# 4. Initialize and build the model. Identify the points of improvement and implement the same. 
+
+# 5. Print the accuracy score and confusion matrix (5 points)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import pandas as pd
+
+from sklearn.model_selection import train_test_split
+
+from sklearn.preprocessing import StandardScaler
+
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+import tensorflow as tf
+
+from tensorflow import keras
+
+# 1. Read the dataset
+
+data = pd.read_csv("/content/drive/MyDrive/Practicals/ML/Churn_Modelling.csv")  # Replace with the actual path to the dataset
+
+data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 2. Distinguish features and target
+
+X = data.drop("Exited", axis=1)  # Features
+
+y = data["Exited"]  # Target variable
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+X
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 2. Divide the dataset into training and test sets
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+
+Churn
+
+
+
+import pandas as pd
+
+import numpy as np
+
+import matplotlib.pyplot as plt
+
+import seaborn as sns
+
+
+
+
+
+df = pd.read_csv("Churn_Modelling.csv")
+
+
+
+
+
+df.shape
+
+
+
+
+
+print(df.info())
+
+
+
+
+
+df
+
+
+
+
+
+# separate features and target value 
+
+x = df[["CreditScore",	"Age",	"Tenure",	"Balance",	"NumOfProducts"	,"HasCrCard","IsActiveMember","EstimatedSalary"	]]
+
+y = df["Exited"]
+
+
+
+
+
+
+
+sns.countplot(x=y)
+
+
+
+
+
+y.value_counts()
+
+
+
+
+
+# Normalize
+
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+
+x_scaled = scaler.fit_transform(x)
+
+
+
+
+
+x_scaled
+
+
+
+
+
+# split data
+
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(x_scaled, y, random_state=0, test_size=0.25)
+
+
+
+
+
+X_train.shape
+
+X_test.shape
+
+
+
+
+
+#  ANN from sklearn 
+
+from sklearn.neural_network import MLPClassifier
+
+ann = MLPClassifier(hidden_layer_sizes=(100,100,100),
+
+                   random_state=0,
+
+                   max_iter=100,
+
+                   activation='relu')
+
+ann.fit(X_train, y_train)
+
+
+
+
+
+y_pred = ann.predict(X_test)
+
+
+
+
+
+y_test.value_counts()
+
+
+
+
+
+from sklearn.metrics import ConfusionMatrixDisplay, accuracy_score, classification_report,confusion_matrix
+
+ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
+
+
+
+
+
+# Calculate accuracy
+
+accuracy = accuracy_score(y_test, y_pred)
+
+print("Accuracy:", accuracy)
+
+# Confusion matrix
+
+conf_matrix = confusion_matrix(y_test, y_pred)
+
+print("Confusion Matrix:\n", conf_matrix)
+
+print(classification_report(y_test, y_pred))
+
+
+
+
+
+# Balance the imbalanced class
+
+!pip install imbalanced-learn
+
+
+
+
+
+from imblearn.over_sampling import RandomOverSampler
+
+ros = RandomOverSampler(random_state=0)
+
+x_res, y_res = ros.fit_resample(x,y)
+
+
+
+
+
+x_res.shape
+
+
+
+
+
+# Normalize
+
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+
+x_scaled = scaler.fit_transform(x_res)
+
+
+
+
+
+x_scaled
+
+
+
+
+
+# split data
+
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(x_scaled, y_res, random_state=0, test_size=0.25)
+
+
+
+
+
+X_train.shape
+
+X_test.shape
+
+
+
+
+
+#  ANN from sklearn 
+
+from sklearn.neural_network import MLPClassifier
+
+ann = MLPClassifier(hidden_layer_sizes=(100,100,100),
+
+                   random_state=0,
+
+                   max_iter=100,
+
+                   activation='relu')
+
+
+
+ann.fit(X_train, y_train)
+
+
+
+
+
+y_pred = ann.predict(X_test)
+
+
+
+
+
+y_test.value_counts()
+
+
+
+
+
+# Calculate accuracy
+
+accuracy = accuracy_score(y_test, y_pred)
+
+print("Accuracy:", accuracy)
+
+# Confusion matrix
+
+conf_matrix = confusion_matrix(y_test, y_pred)
+
+print("Confusion Matrix:\n", conf_matrix)
+
+print(classification_report(y_test, y_pred))

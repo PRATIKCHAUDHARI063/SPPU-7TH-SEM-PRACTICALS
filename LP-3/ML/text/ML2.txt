@@ -1,0 +1,152 @@
+# Classify the email using the binary classification method. Email Spam detection has two 
+# states: a) Normal State – Not Spam, b) Abnormal State – Spam. Use K-Nearest Neighbors and 
+# Support Vector Machine for classification. Analyze their performance.
+# Dataset link: The emails.csv dataset on the Kaggle
+# https://www.kaggle.com/datasets/balaka18/email-spam-classification-dataset-csv
+
+
+
+
+
+
+# Import necessary libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, classification_report
+# Load the dataset
+data = pd.read_csv("/content/drive/MyDrive/Practicals/ML/emails.csv")  # Replace with the actual path to the dataset
+data
+
+
+
+
+
+
+
+# 1. Data Preprocessing - Handle missing values if necessary
+data.drop(['Email No.'],axis=1, inplace=True)
+# 2. Feature Selection/Engineering - Select relevant features
+
+
+
+
+
+
+
+# 3. Split the data into training and testing sets
+X = data.drop("Prediction", axis=1)  # Features
+y = data["Prediction"]  # Target variable
+print("Features: ",X)
+print("Target: ",y)
+
+
+
+
+
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+
+
+
+
+
+
+# 4. Model Building
+# K-Nearest Neighbors
+knn_model = KNeighborsClassifier(n_neighbors=5)
+knn_model.fit(X_train, y_train)
+# Support Vector Machine
+svm_model = SVC()
+svm_model.fit(X_train, y_train)
+
+
+
+
+
+
+# 5. Model Evaluation
+# K-Nearest Neighbors
+# knn_predictions = knn_model.predict(X_test)
+# knn_accuracy = accuracy_score(y_test, knn_predictions)
+# knn_report = classification_report(y_test, knn_predictions)
+X_test = X_test.dropna()
+y_test = y_test[X_test.index]  # Ensure `y_test` aligns with `X_test`
+knn_predictions = knn_model.predict(X_test)
+knn_accuracy = accuracy_score(y_test, knn_predictions)
+knn_report = classification_report(y_test, knn_predictions)
+
+
+
+
+
+
+
+print(knn_predictions)
+
+
+
+
+
+
+# Print or visualize the evaluation results
+print("K-Nearest Neighbors Accuracy:")
+print(knn_accuracy)
+print("K-Nearest Neighbors Classification Report:")
+print(knn_report)
+
+
+
+
+
+
+# Support Vector Machine
+svm_predictions = svm_model.predict(X_test)
+svm_accuracy = accuracy_score(y_test, svm_predictions)
+svm_report = classification_report(y_test, svm_predictions)
+
+
+
+
+
+
+print(svm_predictions)
+
+
+
+
+
+
+print("Support Vector Machine Accuracy:")
+print(svm_accuracy)
+print("Support Vector Machine Classification Report:")
+print(svm_report)
+
+
+
+
+
+
+# ################# Overall Anaysis #################
+# K-Nearest Neighbors (KNN):
+# Overall accuracy: 0.86
+# The precision for class 0 (not spam) is 0.93, indicating that 93% of the instances classified as not spam are correct.
+# The recall for class 0 is 0.87, indicating that 87% of the actual not spam instances are correctly classified.
+# The F1-score for class 0 is 0.90, which is the harmonic mean of precision and recall.
+# For class 1 (spam), the precision is 0.73, recall is 0.83, and F1-score is 0.78.
+# The macro average F1-score is 0.84, and the weighted average F1-score is 0.86.
+# Support Vector Machine (SVM):
+# Overall accuracy: 0.80
+# The precision for class 0 (not spam) is 0.79, indicating that 79% of the instances classified as not spam are correct.
+# The recall for class 0 is 0.99, indicating that 99% of the actual not spam instances are correctly classified.
+# The F1-score for class 0 is 0.88.
+# For class 1 (spam), the precision is 0.92, recall is 0.36, and F1-score is 0.52.
+# The macro average F1-score is 0.70, and the weighted average F1-score is 0.77.
+# Here's an interpretation of the results:
+# KNN has a higher accuracy, precision, recall, and F1-score for the "spam" class compared to SVM.
+# SVM has a higher accuracy, precision, recall, and F1-score for the "not spam" class.
+# Depending on the specific problem and requirements, you can choose between KNN and SVM. 
+# KNN appears to be better at classifying spam, while SVM is better at classifying not spam. 
+# Your choice should be based on the trade-offs you are willing to make between precision and recall for each class.
